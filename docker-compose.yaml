@@ -5,6 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: md-kd-2025 # Nombre de la imagen
     container_name: kedro_project
     ports:
       - "8888:8888" # Expose port 8888 for Jupyter Notebook or Kedro UI
@@ -15,4 +16,4 @@ services:
       - ./conf:/home/kedro_docker/conf # Mount the configuration directory
     environment:
       - PYTHONUNBUFFERED=1 # Ensure Python output is not buffered
-    command: ["kedro", "run"] # Default command to run the Kedro pipeline
+    command: ["jupyter", "notebook", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"] # Default command to run the Kedro pipeline
