@@ -1,5 +1,13 @@
-ARG BASE_IMAGE=python:3.9-slim
-FROM $BASE_IMAGE as runtime-environment
+FROM python:3.9-slim as runtime-environment
+
+# Instala dependencias del sistema necesarias para psycopg2 y herramientas útiles (ping, psql)
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    gcc \
+    iputils-ping \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
 
 # Actualiza pip
 RUN python -m pip install --upgrade pip
@@ -12,6 +20,10 @@ RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
 # Actualiza todas las dependencias instaladas
 RUN pip install --no-cache-dir --upgrade $(pip freeze | awk -F '==' '{print $1}')
+
+# Instala las dependencias desde requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt && \
+    pip show psycopg2-binary
 
 # Agrega un usuario para Kedro
 ARG KEDRO_UID=999
@@ -28,5 +40,4 @@ COPY --chown=${KEDRO_UID}:${KEDRO_GID} . .
 # Expone el puerto 8888 para Jupyter Notebook
 EXPOSE 8888
 
-# Comando predeterminado para iniciar Jupyter Notebook
 CMD ["jupyter", "notebook", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"]

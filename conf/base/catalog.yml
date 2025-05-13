@@ -6,3 +6,12 @@
 weather_data:
   type: pandas.CSVDataSet
   filepath: data/01_raw/weatherAUS.csv
+
+equipo_sql:
+  type: pandas.SQLTableDataSet
+  table_name: equipo
+  credentials: postgres_credentials
+  load_args:
+    index_col: false
+  save_args:
+    if_exists: replace

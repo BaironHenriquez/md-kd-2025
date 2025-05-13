@@ -5,15 +5,46 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: md-kd-2025 # Nombre de la imagen
+    image: md-kd-2025
     container_name: kedro_project
     ports:
-      - "8888:8888" # Expose port 8888 for Jupyter Notebook or Kedro UI
+      - "8888:8888"
     volumes:
-      - ./data:/home/kedro_docker/data # Mount the data directory for persistence
-      - ./logs:/home/kedro_docker/logs # Mount the logs directory for persistence
-      - ./notebooks:/home/kedro_docker/notebooks # Mount the notebooks directory
-      - ./conf:/home/kedro_docker/conf # Mount the configuration directory
+      - ./data:/home/kedro_docker/data
+      - ./logs:/home/kedro_docker/logs
+      - ./notebooks:/home/kedro_docker/notebooks
+      - ./conf:/home/kedro_docker/conf
     environment:
-      - PYTHONUNBUFFERED=1 # Ensure Python output is not buffered
-    command: ["jupyter", "notebook", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"] # Default command to run the Kedro pipeline
+      - PYTHONUNBUFFERED=1
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=kedro_db
+      - DB_USER=kedro_user
+      - DB_PASSWORD=secret
+    depends_on:
+      - postgres
+    command: [
+      "jupyter", "notebook",
+      "--ip=0.0.0.0",
+      "--port=8888",
+      "--no-browser",
+      "--allow-root",
+      "--NotebookApp.token=''",
+      "--NotebookApp.password=''"
+    ]
+
+  postgres:
+    image: postgres:14
+    container_name: kedro_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: kedro_db
+      POSTGRES_USER: kedro_user
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
