@@ -6,7 +6,8 @@
 weather_data:
   type: pandas.CSVDataSet
   filepath: data/01_raw/weatherAUS.csv
-
+  load_args:
+    encoding: utf-8
 equipo_sql:
   type: pandas.SQLTableDataSet
   table_name: equipo
