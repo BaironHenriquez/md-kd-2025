@@ -3,10 +3,9 @@ jupyterlab>=3.0
 kedro~=0.19.12
 notebook
 kedro-datasets[pandas]
-
+numpy <2.0
 # Data science libraries
 pandas
-numpy
 scikit-learn
 matplotlib
 seaborn
